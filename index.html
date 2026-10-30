@@ -2,6 +2,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b16">
+
+  <title>Bhaskar Live Quiz | Knowledge Game</title>
+  <meta name="description" content="Join live quiz battles, challenge friends and test your knowledge.">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main class="container">
+
+    <header>
+      <div class="logo">⚡ BHASKAR <span>QUIZ</span></div>
+      <div class="online-status">LIVE QUIZ</div>
+    </header>
+
+    <!-- LOGIN -->
+    <section id="loginScreen" class="card">
+      <h1>Brain <span class="highlight">Battle</span> 🌍</h1>
+      <p>Enter the live quiz arena. Challenge players around the world!</p>
+
+      <input
+        id="playerName"
+        type="text"
+        maxlength="20"
+        placeholder="Enter your nickname"
+        autocomplete="nickname"
+      >
+
+      <button class="primary" onclick="loginPlayer()">
+        ENTER GAME 🚀
+      </button>
+
+      <p id="loginMessage" class="notice">
+        No email or password required.
+      </p>
+    </section>
+
+    <!-- HOME -->
+    <section id="homeScreen" class="card hidden">
+      <h2>Welcome, <span id="welcomeName" class="highlight">Player</span>!</h2>
+      <p>Choose how you want to play.</p>
+
+      <div class="card">
+        <h3>🎮 Create a Room</h3>
+        <p>Create a private quiz room and invite your friends.</p>
+        <button class="primary" onclick="createRoom()">
+          CREATE LIVE ROOM
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>🔑 Join a Room</h3>
+        <input
+          id="roomCodeInput"
+          type="text"
+          maxlength="6"
+          inputmode="numeric"
+          placeholder="Enter 6-digit room code"
+        >
+        <button class="secondary" onclick="joinRoom()">
+          JOIN ROOM
+        </button>
+      </div>
+
+      <p id="homeMessage"></p>
+    </section>
+
+    <!-- LOBBY -->
+    <section id="lobbyScreen" class="card hidden">
+      <h2>Waiting Lobby 👥</h2>
+      <p>Share this room code with your friends.</p>
+
+      <div style="margin:20px 0">
+        <div class="room-code" id="roomCode">------</div>
+      </div>
+
+      <button class="secondary" onclick="copyRoomCode()">
+        COPY ROOM CODE
+      </button>
+
+      <h3 style="margin-top:25px">Players in Room</h3>
+      <div id="playersList">
+        <p>Waiting for players...</p>
+      </div>
+
+      <p id="lobbyMessage"></p>
+
+      <button id="startGameButton" class="primary" onclick="startLiveGame()">
+        START QUIZ
+      </button>
+
+      <button class="secondary" onclick="leaveRoom()">
+        LEAVE ROOM
+      </button>
+    </section>
+
+    <!-- GAME -->
+    <section id="gameScreen" class="card hidden">
+
+      <div class="game-info">
+        <div class="info-box">
+          <small>QUESTION</small>
+          <strong id="questionNumber">1/10</strong>
+        </div>
+
+        <div class="info-box">
+          <small>TIME LEFT</small>
+          <strong id="timer">15s</strong>
+        </div>
+
+        <div class="info-box">
+          <small>YOUR SCORE</small>
+          <strong id="playerScore">0</strong>
+        </div>
+      </div>
+
+      <div class="progress">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <p id="questionCategory">GENERAL KNOWLEDGE</p>
+
+      <div id="questionText" class="question">
+        Question will appear here.
+      </div>
+
+      <div id="answerOptions" class="options"></div>
+
+      <p id="answerMessage"></p>
+
+      <h3 style="margin-top:25px">🏆 Live Scores</h3>
+      <div id="liveLeaderboard">
+        <p>Loading scores...</p>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="resultScreen" class="card hidden">
+      <h1>Quiz <span class="highlight">Completed!</span> 🏆</h1>
+
+      <p id="resultMessage">Well played!</p>
+
+      <div class="info-box" style="margin-top:20px">
+        <small>YOUR FINAL SCORE</small>
+        <strong id="finalScore">0</strong>
+      </div>
+
+      <h3 style="margin-top:25px">🏅 Final Leaderboard</h3>
+      <div id="finalLeaderboard"></div>
+
+      <button class="primary" onclick="returnHome()">
+        BACK TO HOME
+      </button>
+    </section>
+
+    <footer>
+      This game developed by <strong>Knowledge Game</strong><br>
+      Developed by <strong>Bhaskar Mishra</strong>
+    </footer>
+
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+  <!-- Main Game JavaScript -->
+  <script src="app.js"></script>
+
+</body>
+  </html>
+        
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bhaskar Live Quiz</title>
