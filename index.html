@@ -1,1 +1,326 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bhaskar Live Quiz</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#080b18;
+  color:white;
+  font-family:Arial,sans-serif;
+  min-height:100vh;
+  padding:18px;
+}
+.container{max-width:650px;margin:auto}
+header{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:35px;
+}
+.logo{font-size:20px;font-weight:bold;color:#00e5ff}
+.tag{font-size:11px;color:#00ff9d}
+.card{
+  background:#121a30;
+  border:1px solid #283654;
+  border-radius:18px;
+  padding:25px;
+  margin-bottom:18px;
+}
+h1{font-size:32px;margin-bottom:12px}
+h1 span{color:#00e5ff}
+p{color:#aab6d3;line-height:1.6}
+input,select{
+  width:100%;padding:15px;margin-top:12px;
+  border:1px solid #344362;border-radius:10px;
+  background:#0b1225;color:white;font-size:16px;
+}
+button{
+  width:100%;padding:15px;border:0;
+  border-radius:11px;background:#00d9ff;
+  color:#07101e;font-size:16px;font-weight:bold;
+  cursor:pointer;margin-top:15px;
+}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.secondary{background:#273653;color:white}
+.info{
+  display:flex;justify-content:space-between;
+  gap:10px;margin-bottom:18px;
+}
+.stat{
+  background:#0b1225;padding:12px;
+  border-radius:10px;text-align:center;flex:1;
+}
+.stat small{color:#9caac5}
+.stat strong{display:block;font-size:21px;margin-top:5px}
+.question{font-size:22px;line-height:1.4;margin:20px 0}
+.option{
+  padding:15px;border:1px solid #344362;
+  background:#0b1225;border-radius:11px;
+  margin:10px 0;cursor:pointer;
+}
+.option:hover{border-color:#00e5ff}
+.option.correct{background:#12442f;border-color:#00ff9d}
+.option.wrong{background:#4a202d;border-color:#ff5277}
+#game,#result{display:none}
+#feedback{margin-top:14px;min-height:25px}
+.progress{
+  height:7px;background:#26344e;
+  border-radius:10px;overflow:hidden;margin:15px 0;
+}
+#bar{height:100%;width:100%;background:#00e5ff}
+footer{text-align:center;color:#7d8ba8;font-size:13px;margin:35px 0 12px}
+footer b{color:#00e5ff}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+  <div class="logo">⚡ BHASKAR QUIZ</div>
+  <div class="tag">● QUIZ MODE</div>
+</header>
+
+<section id="home" class="card">
+  <h1>Brain <span>Battle</span></h1>
+  <p>Test your knowledge. Challenge your brain. Become a quiz champion!</p>
+
+  <input id="player" placeholder="Enter your name" maxlength="20">
+
+  <select id="category">
+    <option value="All">All Categories</option>
+    <option value="Science">Science</option>
+    <option value="Maths">Maths</option>
+    <option value="GK">General Knowledge</option>
+    <option value="English">English</option>
+  </select>
+
+  <button onclick="startGame()">START QUIZ 🚀</button>
+  <p style="margin-top:15px;font-size:12px">
+    10 Questions • 15 Seconds Each • 10 Points Per Correct Answer
+  </p>
+</section>
+
+<section id="game" class="card">
+  <div class="info">
+    <div class="stat"><small>QUESTION</small><strong id="number">1/10</strong></div>
+    <div class="stat"><small>TIME</small><strong id="timer">15s</strong></div>
+    <div class="stat"><small>SCORE</small><strong id="score">0</strong></div>
+  </div>
+
+  <div class="progress"><div id="bar"></div></div>
+
+  <p id="topic">SCIENCE</p>
+  <div class="question" id="question">Question appears here</div>
+
+  <div id="options"></div>
+  <p id="feedback"></p>
+
+  <button id="next" class="secondary" onclick="nextQuestion()" disabled>
+    NEXT QUESTION →
+  </button>
+</section>
+
+<section id="result" class="card">
+  <h1>Quiz <span>Completed!</span> 🏆</h1>
+  <p id="welcome"></p>
+
+  <div class="info" style="margin-top:20px">
+    <div class="stat"><small>YOUR SCORE</small><strong id="finalScore">0</strong></div>
+    <div class="stat"><small>CORRECT</small><strong id="correct">0</strong></div>
+    <div class="stat"><small>ACCURACY</small><strong id="accuracy">0%</strong></div>
+  </div>
+
+  <h2 id="message" style="margin-top:20px">Well Played!</h2>
+  <button onclick="startGame()">PLAY AGAIN 🔄</button>
+  <button class="secondary" onclick="goHome()">HOME</button>
+</section>
+
+<footer>
+  Powered by Knowledge<br><br>
+  Developed by <b>Bhaskar Mishra</b>
+</footer>
+
+</div>
+
+<script>
+const bank = [
+ {c:"Science",q:"Which gas do plants absorb during photosynthesis?",o:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],a:1},
+ {c:"Science",q:"What is the chemical symbol of water?",o:["CO2","O2","H2O","NaCl"],a:2},
+ {c:"Science",q:"Which organ pumps blood in the human body?",o:["Lungs","Brain","Heart","Kidney"],a:2},
+ {c:"Science",q:"What is the SI unit of electric current?",o:["Volt","Ampere","Ohm","Watt"],a:1},
+ {c:"Science",q:"Which planet is known as the Red Planet?",o:["Venus","Mars","Jupiter","Saturn"],a:1},
+ {c:"Maths",q:"What is 12 × 12?",o:["124","144","132","154"],a:1},
+ {c:"Maths",q:"What is the square root of 169?",o:["11","12","13","14"],a:2},
+ {c:"Maths",q:"What is the value of sin 30°?",o:["1","0","1/2","√3/2"],a:2},
+ {c:"Maths",q:"What is 25% of 200?",o:["25","40","50","75"],a:2},
+ {c:"Maths",q:"How many sides does a hexagon have?",o:["5","6","7","8"],a:1},
+ {c:"GK",q:"What is the capital of India?",o:["Mumbai","New Delhi","Kolkata","Chennai"],a:1},
+ {c:"GK",q:"Which is the largest ocean?",o:["Indian","Atlantic","Pacific","Arctic"],a:2},
+ {c:"GK",q:"How many days are there in a leap year?",o:["364","365","366","367"],a:2},
+ {c:"GK",q:"Which is the national animal of India?",o:["Lion","Tiger","Elephant","Leopard"],a:1},
+ {c:"GK",q:"Which planet is closest to the Sun?",o:["Earth","Mars","Mercury","Venus"],a:2},
+ {c:"English",q:"What is the plural of 'Child'?",o:["Childs","Children","Childes","Childrens"],a:1},
+ {c:"English",q:"Choose the correct spelling.",o:["Beautifull","Beutiful","Beautiful","Beautifal"],a:2},
+ {c:"English",q:"What is the opposite of 'Ancient'?",o:["Old","Modern","Past","Historic"],a:1},
+ {c:"English",q:"What is the past tense of 'Go'?",o:["Goed","Gone","Went","Going"],a:2},
+ {c:"English",q:"Which word is a noun?",o:["Quickly","Beautiful","Happiness","Run"],a:2}
+];
+
+let questions=[],index=0,points=0,correct=0;
+let time=15,clock=null,locked=false,playerName="";
+
+function shuffle(arr){
+ return [...arr].sort(()=>Math.random()-0.5);
+}
+
+function startGame(){
+ playerName=document.getElementById("player").value.trim() || "Player";
+ let cat=document.getElementById("category").value;
+
+ let pool=bank.filter(q=>cat==="All" || q.c===cat);
+ questions=shuffle(pool).slice(0,Math.min(10,pool.length));
+
+ index=0;
+ points=0;
+ correct=0;
+
+ document.getElementById("home").style.display="none";
+ document.getElementById("result").style.display="none";
+ document.getElementById("game").style.display="block";
+
+ showQuestion();
+}
+
+function showQuestion(){
+ clearInterval(clock);
+ locked=false;
+ time=15;
+
+ let q=questions[index];
+
+ document.getElementById("number").textContent=
+ (index+1)+"/"+questions.length;
+ document.getElementById("timer").textContent=time+"s";
+ document.getElementById("score").textContent=points;
+ document.getElementById("topic").textContent=q.c.toUpperCase();
+ document.getElementById("question").textContent=q.q;
+ document.getElementById("feedback").textContent="";
+ document.getElementById("next").disabled=true;
+ document.getElementById("next").textContent=
+ index===questions.length-1?"SEE RESULT 🏆":"NEXT QUESTION →";
+
+ let options=document.getElementById("options");
+ options.innerHTML="";
+
+ q.o.forEach((answer,i)=>{
+  let btn=document.createElement("div");
+  btn.className="option";
+  btn.textContent=String.fromCharCode(65+i)+". "+answer;
+  btn.onclick=()=>chooseAnswer(i);
+  options.appendChild(btn);
+ });
+
+ updateTimer();
+ clock=setInterval(()=>{
+  time--;
+  updateTimer();
+  if(time<=0){
+   clearInterval(clock);
+   if(!locked){
+    locked=true;
+    document.getElementById("feedback").textContent="⏰ Time's up!";
+    document.getElementById("next").disabled=false;
+    disableOptions();
+    highlightCorrect();
+   }
+  }
+ },1000);
+}
+
+function updateTimer(){
+ document.getElementById("timer").textContent=time+"s";
+ document.getElementById("bar").style.width=(time/15*100)+"%";
+}
+
+function chooseAnswer(selected){
+ if(locked)return;
+
+ locked=true;
+ clearInterval(clock);
+
+ let q=questions[index];
+ let opts=document.querySelectorAll(".option");
+
+ opts.forEach(el=>el.style.pointerEvents="none");
+
+ if(selected===q.a){
+  points+=10;
+  correct++;
+  opts[selected].classList.add("correct");
+  document.getElementById("feedback").textContent="🎉 Correct! +10 points";
+ }else{
+  opts[selected].classList.add("wrong");
+  opts[q.a].classList.add("correct");
+  document.getElementById("feedback").textContent="❌ Wrong answer. Correct answer: "+q.o[q.a];
+ }
+
+ document.getElementById("score").textContent=points;
+ document.getElementById("next").disabled=false;
+}
+
+function disableOptions(){
+ document.querySelectorAll(".option").forEach(el=>{
+  el.style.pointerEvents="none";
+ });
+}
+
+function highlightCorrect(){
+ let q=questions[index];
+ document.querySelectorAll(".option")[q.a].classList.add("correct");
+}
+
+function nextQuestion(){
+ if(!locked)return;
+ clearInterval(clock);
+
+ index++;
+ if(index<questions.length){
+  showQuestion();
+ }else{
+  showResult();
+ }
+}
+
+function showResult(){
+ clearInterval(clock);
+ document.getElementById("game").style.display="none";
+ document.getElementById("result").style.display="block";
+
+ document.getElementById("welcome").textContent=
+ "Great effort, "+playerName+"!";
+
+ document.getElementById("finalScore").textContent=points;
+ document.getElementById("correct").textContent=correct;
+ document.getElementById("accuracy").textContent=
+ Math.round(correct/questions.length*100)+"%";
+
+ document.getElementById("message").textContent=
+ points>=80?"🏆 Excellent Performance!":
+ points>=50?"👏 Great Job!":"💪 Keep Practising!";
+}
+
+function goHome(){
+ clearInterval(clock);
+ document.getElementById("result").style.display="none";
+ document.getElementById("game").style.display="none";
+ document.getElementById("home").style.display="block";
+}
+</script>
+</body>
+</html>
+
